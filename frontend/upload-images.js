@@ -67,7 +67,7 @@ var handleResponse = function (res) {
     response.images.forEach(function (image) {
         targetElement.append("<img class='polaroid' src='/images/" + response.pageId + "/" + image + "'/>");
         $('#images')
-            .append("<li><a href='/images/" + response.pageId + "/" + image + "' title='" + image + "'><i class='icon-file'></i>" + image + "</a><a href='#' class='icon-remove-sign'</li>");
+            .append("<li><span class=\"attachLink\" title='" + image + "'><i class='icon-file'></i>" + image + "</span><a href='#' class='icon-remove-sign'</li>");
     });
     $("h1:first").data().lastModified = response.lastModified;
     $("body").trigger("save");

@@ -10,6 +10,7 @@ if (!isDeleted) {
     require("./upload-attachments");
     require("./upload-images");
     require("./delete-image");
+    require("./link-attachments")
 }
 require("./highlight-code");
 require("./cover-image-loader");

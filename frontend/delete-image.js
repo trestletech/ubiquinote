@@ -13,7 +13,7 @@ $(".plain-list")
         type: "DELETE",
         data: {
             file: $(this)
-                .prev("a")[0].title
+                .prev("span")[0].title
         }
     })
         .done(function () {

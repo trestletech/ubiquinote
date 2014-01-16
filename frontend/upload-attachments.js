@@ -32,7 +32,7 @@ function uploadFiles(url, files) {
     var formData = new FormData();
 
     for (var i = 0, file; file = files[i]; ++i) {
-        formData.append("attachments", file);
+        formData.append("attachments", file);        
     }
 
     var xhr = new XMLHttpRequest();
@@ -57,7 +57,7 @@ function uploadFiles(url, files) {
 var handleResponse = function (res) {
     var response = JSON.parse(res);
     response.attachments.forEach(function (attachment) {
-        $('#attachments').append("<li><a href='/attachments/" + response.pageId + "/" + attachment + "' title='" + attachment + "'><i class='icon-file'></i>" + attachment + "</a><a href='#' class='icon-remove-sign'</li>");
+        $('#attachments').append("<li><span class=\"attachLink\" title='" + attachment + "'><i class='icon-file'></i>" + attachment + "</span><a href='#' class='icon-remove-sign'</li>");
     });
     $("h1:first").data().lastModified = response.lastModified;
 };
