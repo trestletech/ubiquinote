@@ -7,6 +7,7 @@ var supportedMediaTypes = require("../config").supportedMediaTypes;
 var fs = require("fs");
 var path = require("path");
 var request = require("request");
+var _ = require('underscore');
 
 
 var loadPage = function (req, res, next) {
@@ -55,43 +56,15 @@ module.exports = function (app) {
             page.save(function (err) {
                 if (err) { return res.send(500); }
 
-                res.send({
-                    attachments: attachments,
-                    pageId: page._id,
-                    lastModified: page.lastModified.getTime()
+                var attObj = _.map(attachments, function(att){
+                    return {
+                        name: att,
+                        html: "<img class='polaroid' src='/attachments/" + page._id + "/" + att + "'/>"
+                    }
                 });
-            });
-        });
-    });
-
-    app.post("/images", loadPage, function (req, res) {
-        if(!req.files.images) { return res.send(400); }
-        var files = req.files.images[0] ? req.files.images : [req.files.images];
-
-        var unsupportedImageType = files.some(function (file) {
-            return supportedMediaTypes.images.indexOf(file.type) === -1;
-        });
-
-        if (unsupportedImageType) {
-            return res.send(415);
-        }
-
-        var page = req.page;
-        moveFiles(page, files, "images", function (err, images) {
-            if (err) {
-                console.error(err);
-                return res.send(400);
-            }
-
-            page.images = page.images.concat(images);
-            page.save(function (err) {
-                if (err) {
-                    console.error(err);
-                    return res.send(500);
-                }
 
                 res.send({
-                    images: images,
+                    attachments: attObj,
                     pageId: page._id,
                     lastModified: page.lastModified.getTime()
                 });
@@ -114,31 +87,6 @@ module.exports = function (app) {
             return page.save(function(err) {
                 if(err) {console.error(err); return 500; }
                 fs.unlink(path.join(__dirname, "..", "public", "attachments", page.id, removedFile), function(err) {
-                    res.send(200, {
-                        lastModified: page.lastModified.getTime()
-                    });
-                });
-            });
-        }
-        res.send(404);
-    });
-
-    app.delete("/images", loadPage, function (req, res) {
-        var removedFile = null;
-        var page = req.page;
-        page.images = page.images.filter(function (image) {
-            if (req.body.file == image) {
-                removedFile = image;
-                return false;
-            }
-            console.log(true);
-            return true;
-        });
-
-        if (removedFile) {
-            return page.save(function(err) {
-                if(err) {console.error(err); return 500; }
-                fs.unlink(path.join(__dirname, "..", "public", "images", page.id, removedFile), function(err) {
                     res.send(200, {
                         lastModified: page.lastModified.getTime()
                     });

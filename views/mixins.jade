@@ -20,17 +20,6 @@ mixin fileDropper
     if page && !page.deleted
         #drop-zone.drop-here= __("drop-files-here")
 
-mixin images(files)
-    h3= __("images")
-    div.imagesDesc= __("drop-images-and-other-media")
-    ul#images.images.plain-list(data-pageId="#{page._id}")
-        for file in files
-            li
-                span.attachLink(title="#{file}")
-                    i.icon-picture
-                    = file
-                a.icon-remove-sign
-
 mixin versionLink(page)
     h3= __("versions")
     a(href="/versions/#{page._id}")= __("show-versions")

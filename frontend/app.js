@@ -8,7 +8,6 @@ if (!isDeleted) {
     require("./focus-contenteditable");
     require("./ckeditor-initialize")(CKEDITOR);
     require("./upload-attachments");
-    require("./upload-images");
     require("./delete-image");
     require("./link-attachments")
 }
