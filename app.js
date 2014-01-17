@@ -10,8 +10,11 @@ var app = express();
 
 app.disable("x-powered-by");
 
+// Shame, but express doesn't expose this on requests, so we'll need to track it ourselves.
+global.port = process.env.PORT || 3000;
+
 app.configure(function () {
-    app.set("port", process.env.PORT || 3000);
+    app.set("port", port);
     app.set("views", __dirname + "/views");
     app.set("view engine", "jade");
     app.use(express.favicon());

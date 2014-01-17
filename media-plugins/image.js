@@ -4,3 +4,7 @@ exports.insert = function(uri, content, cb){
 }
 
 exports.mime = ['image/gif', 'image/jpeg', 'image/pjpeg', 'image/png', 'image/svg+xml'];
+
+exports.preview = function(uri, content, cb){
+	cb("<img class='polaroid' src='"+uri+"'/>");
+}

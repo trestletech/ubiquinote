@@ -91,7 +91,7 @@ function uploadFiles(url, files, targetElement) {
 
 var handleResponse = function (response) {
     response.attachments.forEach(function (attachment) {
-        $('#attachments').append("<li><a href=\"attachments/"+response.pageId+"/"+attachment+"\" class=\"attachLink\" title='" + attachment.name + "'><i class='icon-file'></i>" + attachment.name + "</a><a href='#' class='icon-remove-sign'</li>");
+        $('#attachments').append("<li><a href=\"attachments/"+response.pageId+"/"+attachment.name+"\" class=\"attachLink\" title='" + attachment.name + "'><i class='icon-file'></i>" + attachment.name + "</a><a href='#' class='icon-remove-sign'</li>");
     });
     $("h1:first").data().lastModified = response.lastModified;
 };

@@ -40,7 +40,7 @@ module.exports = function (app) {
         var upload = new Object(null);
         try{
             _.each(files, function(file){
-                MediaHandler.render(file.type, file.name, 0, page, function(insert){
+                MediaHandler.render(file.type, file.name, 0, page._id, function(insert){
                     //FIXME: there's no guarantee that this will resolve before we respond.
                     upload[file.name] = {insert: insert};
                 });                
@@ -97,6 +97,40 @@ module.exports = function (app) {
             });
         }
         res.send(404);
+    });
+
+    app.get("/attachments/preview", function(req, res){
+        // First get the content
+        // Could look it up from the FS but we'd have to re-invent MIME and security. Just make a web
+        // service call to localhost.
+        var url = req.protocol + "://localhost:" + global.port + "/attachments/" + req.query.pageId + 
+            "/" + req.query.file;
+        
+        request.get({uri:url, encoding:null}, function(err, data, body) {
+            if (err) return res.send(401);
+
+            if(data && data.headers && data.headers["content-type"]) {                        
+                MediaHandler.preview(data.headers["content-type"], req.query.file, 
+                        data.body, req.query.pageId, function(preview, mhErr){                
+                    if (mhErr) return res.send(401);
+
+                    if(!preview){
+                        // Previewer was undefined. All we can do is offer this file as a download
+                        _.each(data.headers, function(val, key){
+                            res.setHeader(key, val);
+                        })
+                        res.setHeader('Content-disposition', 'attachment; filename=' + req.query.file);
+                        console.log(data);
+                        res.end(new Buffer(data.body));
+                        return;
+                    }
+
+                    res.send(preview);
+                });
+            } else{
+                res.send(401);    
+            }            
+        });                
     });
 
     app.get('/detect-content-type', function(req, res) {
