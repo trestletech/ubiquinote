@@ -5,6 +5,7 @@ var message = require("./message");
 var ProgressBar = require("./progress-bar");
 var Dropzone = require("./dropzone");
 var handleErrors = require("./handle-xhr-errors");
+var injectMedia = require("./inject-media");
 
 if ($(".drop-here").length > 0){
     $(function () {
@@ -90,7 +91,7 @@ function uploadFiles(url, files, targetElement) {
 
 var handleResponse = function (response) {
     response.attachments.forEach(function (attachment) {
-        $('#attachments').append("<li><span class=\"attachLink\" title='" + attachment.name + "'><i class='icon-file'></i>" + attachment.name + "</span><a href='#' class='icon-remove-sign'</li>");
+        $('#attachments').append("<li><a href=\"attachments/"+response.pageId+"/"+attachment+"\" class=\"attachLink\" title='" + attachment.name + "'><i class='icon-file'></i>" + attachment.name + "</a><a href='#' class='icon-remove-sign'</li>");
     });
     $("h1:first").data().lastModified = response.lastModified;
 };

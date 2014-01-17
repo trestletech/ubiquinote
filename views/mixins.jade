@@ -11,7 +11,7 @@ mixin attachments(files)
     ul#attachments.attachments.plain-list(data-pageId="#{page._id}")
         for file in files
             li
-                span.attachLink(title="#{file}")
+                a.attachLink(title="#{file}",href="/attachments/#{page._id}/#{file}")
                     i.icon-file
                     = file
                 a.icon-remove-sign
