@@ -37,9 +37,13 @@ module.exports = function (app) {
 
         var page = req.page;
 
+        var upload = new Object(null);
         try{
-            var upload = _.map(files, function(file){
-                return MediaHandler.render(file.type, file.name, 0, page);
+            _.each(files, function(file){
+                MediaHandler.render(file.type, file.name, 0, page, function(insert){
+                    //FIXME: there's no guarantee that this will resolve before we respond.
+                    upload[file.name] = {insert: insert};
+                });                
             });
         } catch (err){
             return res.send(415);
@@ -58,7 +62,7 @@ module.exports = function (app) {
                 var attObj = _.map(attachments, function(att){
                     return {
                         name: att,
-                        html: "<img class='polaroid' src='/attachments/" + page._id + "/" + att + "'/>"
+                        html: upload[att].insert
                     }
                 });
 
