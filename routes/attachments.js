@@ -3,12 +3,11 @@
 var Page = require("../models/page");
 var parse = require("url").parse;
 var moveFiles = require("../lib/move-files");
-var supportedMediaTypes = require("../config").supportedMediaTypes;
 var fs = require("fs");
 var path = require("path");
 var request = require("request");
 var _ = require('underscore');
-
+var MediaHandler = require('../lib/media-handler');
 
 var loadPage = function (req, res, next) {
     if (!req.headers.referer) {
@@ -36,15 +35,15 @@ module.exports = function (app) {
         if(!req.files.attachments) { return res.send(400); }
         var files = req.files.attachments[0] ? req.files.attachments : [req.files.attachments];
 
-        var unsupportedMedia = files.some(function (file) {
-            return supportedMediaTypes.media.indexOf(file.type) === -1;
-        });
+        var page = req.page;
 
-        if (unsupportedMedia) {
+        try{
+            var upload = _.map(files, function(file){
+                return MediaHandler.render(file.type, file.name, 0, page);
+            });
+        } catch (err){
             return res.send(415);
         }
-
-        var page = req.page;
 
         moveFiles(page, files, "attachments", function (err, attachments) {
             if (err) {
