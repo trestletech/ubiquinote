@@ -3,11 +3,11 @@
 var Page = require("../models/page");
 var parse = require("url").parse;
 var moveFiles = require("../lib/move-files");
-var supportedMediaTypes = require("../config").supportedMediaTypes;
 var fs = require("fs");
 var path = require("path");
 var request = require("request");
-
+var _ = require('underscore');
+var MediaHandler = require('../lib/media-handler');
 
 var loadPage = function (req, res, next) {
     if (!req.headers.referer) {
@@ -35,15 +35,19 @@ module.exports = function (app) {
         if(!req.files.attachments) { return res.send(400); }
         var files = req.files.attachments[0] ? req.files.attachments : [req.files.attachments];
 
-        var unsupportedMedia = files.some(function (file) {
-            return supportedMediaTypes.media.indexOf(file.type) === -1;
-        });
+        var page = req.page;
 
-        if (unsupportedMedia) {
+        var upload = new Object(null);
+        try{
+            _.each(files, function(file){
+                MediaHandler.render(file.type, file.name, 0, page._id, function(insert){
+                    //FIXME: there's no guarantee that this will resolve before we respond.
+                    upload[file.name] = {insert: insert};
+                });                
+            });
+        } catch (err){
             return res.send(415);
         }
-
-        var page = req.page;
 
         moveFiles(page, files, "attachments", function (err, attachments) {
             if (err) {
@@ -55,43 +59,15 @@ module.exports = function (app) {
             page.save(function (err) {
                 if (err) { return res.send(500); }
 
-                res.send({
-                    attachments: attachments,
-                    pageId: page._id,
-                    lastModified: page.lastModified.getTime()
+                var attObj = _.map(attachments, function(att){
+                    return {
+                        name: att,
+                        html: upload[att].insert
+                    }
                 });
-            });
-        });
-    });
-
-    app.post("/images", loadPage, function (req, res) {
-        if(!req.files.images) { return res.send(400); }
-        var files = req.files.images[0] ? req.files.images : [req.files.images];
-
-        var unsupportedImageType = files.some(function (file) {
-            return supportedMediaTypes.images.indexOf(file.type) === -1;
-        });
-
-        if (unsupportedImageType) {
-            return res.send(415);
-        }
-
-        var page = req.page;
-        moveFiles(page, files, "images", function (err, images) {
-            if (err) {
-                console.error(err);
-                return res.send(400);
-            }
-
-            page.images = page.images.concat(images);
-            page.save(function (err) {
-                if (err) {
-                    console.error(err);
-                    return res.send(500);
-                }
 
                 res.send({
-                    images: images,
+                    attachments: attObj,
                     pageId: page._id,
                     lastModified: page.lastModified.getTime()
                 });
@@ -123,29 +99,37 @@ module.exports = function (app) {
         res.send(404);
     });
 
-    app.delete("/images", loadPage, function (req, res) {
-        var removedFile = null;
-        var page = req.page;
-        page.images = page.images.filter(function (image) {
-            if (req.body.file == image) {
-                removedFile = image;
-                return false;
-            }
-            console.log(true);
-            return true;
-        });
+    app.get("/attachments/preview", function(req, res){
+        // First get the content
+        // Could look it up from the FS but we'd have to re-invent MIME and security. Just make a web
+        // service call to localhost.
+        var url = req.protocol + "://localhost:" + global.port + "/attachments/" + req.query.pageId + 
+            "/" + req.query.file;
+        
+        request.get({uri:url, encoding:null}, function(err, data, body) {
+            if (err) return res.send(401);
 
-        if (removedFile) {
-            return page.save(function(err) {
-                if(err) {console.error(err); return 500; }
-                fs.unlink(path.join(__dirname, "..", "public", "images", page.id, removedFile), function(err) {
-                    res.send(200, {
-                        lastModified: page.lastModified.getTime()
-                    });
+            if(data && data.headers && data.headers["content-type"]) {                        
+                MediaHandler.preview(data.headers["content-type"], req.query.file, 
+                        data.body, req.query.pageId, function(preview, mhErr){                
+                    if (mhErr) return res.send(401);
+
+                    if(!preview){
+                        // Would be nice to offer this file as a downloadat this point (so we don't have to
+                        // re-serve the static asset), but we're having two problems:
+                        //  1.) How do we detect when a preview was generated sucessfully vs. when a binary
+                        //      blob is being returned?
+                        //  2.) Once we have the response via AJAX, it's too late to prompt with a "Save As."
+                        // So it looks like we'll be best off just sending a redirect.
+                        return(res.json({redirect: url + '?downloadAttachment=1'}));
+                    }
+
+                    return res.json({html:preview});
                 });
-            });
-        }
-        res.send(404);
+            } else{
+                res.send(401);    
+            }            
+        });                
     });
 
     app.get('/detect-content-type', function(req, res) {

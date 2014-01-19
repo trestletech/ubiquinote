@@ -7,9 +7,11 @@ var version = require("mongoose-version");
 var textSearch = require("mongoose-text-search");
 var config = require("../config");
 var sanitze = require("validator").sanitize;
+var MediaHandler = require('../lib/media-handler');
 
 var filterOutput = function (value) {
-    return sanitze(value).xss(false, ["iframe"]);
+    var pluginWhitelist = MediaHandler.getWhitelistTags();
+    return sanitze(value).xss(false, pluginWhitelist.concat("iframe"));
 };
 
 var Page = new Schema({

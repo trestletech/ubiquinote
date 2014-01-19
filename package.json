@@ -25,7 +25,9 @@
     "semver": "~1.1.4",
     "browserify": "~2.17.3",
     "hbsfy": "~0.1.2",
-    "markdown": "~0.4.0"
+    "markdown": "~0.4.0",
+    "mailparser": "git://github.com/andris9/mailparser.git",
+    "underscore": "1.5.x"
   },
   "devDependencies": {
     "livereload": "*",
@@ -33,7 +35,8 @@
     "supertest": "~0.7.0",
     "chai": "~1.6.0",
     "watchify": "0.0.1",
-    "handlebars-runtime": "~1.0.12"
+    "handlebars-runtime": "~1.0.12",
+    "nodemon": "1.0.x"
   },
   "license": "MIT"
 }

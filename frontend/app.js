@@ -9,8 +9,8 @@ if (!isDeleted) {
     require("./paste-media")(document.getElementById("content"));
     require("./ckeditor-initialize")(CKEDITOR);
     require("./upload-attachments");
-    require("./upload-images");
     require("./delete-image");
+    require("./link-attachments")
 }
 require("./highlight-code");
 require("./cover-image-loader");
