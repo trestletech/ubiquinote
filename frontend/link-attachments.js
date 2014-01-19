@@ -24,7 +24,6 @@ $(".plain-list")
             }
         })
         .done(function (dat, status, xhr) {
-            console.log(dat);
             if (dat.html){
                 modal({
                     title: __('attachment-preview'),
