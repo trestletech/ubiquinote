@@ -70,5 +70,8 @@
     "page-status-deleted": "Diese Seite ist gelöscht. Um die Seite wiederherzustellen, wähle 'Wiederherstellen' vom Aktionen-Menü.",
     "no-versions-yet": "Noch keine Versionen",
     "help": "Hilfe",
-    "pages": "Seiten"
+    "pages": "Seiten",
+    "no-preview": "Kann Vorschau nicht machen",
+    "attachment-preview": "Anlagenvorschau",
+    "close": "schließen"
 }

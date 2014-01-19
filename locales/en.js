@@ -73,5 +73,8 @@
 	"page-status-deleted": "This page is deleted. To restore it click restore from the tasks menu.",
 	"no-versions-yet": "No versions yet",
 	"help": "Help",
-	"pages": "Pages"
+	"pages": "Pages",
+	"no-preview": "Cannot render preview",
+	"attachment-preview": "Attachment Preview",
+	"close": "Close"
 }

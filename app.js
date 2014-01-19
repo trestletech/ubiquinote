@@ -29,6 +29,8 @@ app.configure(function () {
         locales: config.locales
     });
 
+    app.use(require("./middleware/set-download"));
+
     app.use(express.static(__dirname + "/public"));
 });
 

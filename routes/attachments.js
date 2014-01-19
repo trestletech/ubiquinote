@@ -115,17 +115,16 @@ module.exports = function (app) {
                     if (mhErr) return res.send(401);
 
                     if(!preview){
-                        // Previewer was undefined. All we can do is offer this file as a download
-                        _.each(data.headers, function(val, key){
-                            res.setHeader(key, val);
-                        })
-                        res.setHeader('Content-disposition', 'attachment; filename=' + req.query.file);
-                        console.log(data);
-                        res.end(new Buffer(data.body));
-                        return;
+                        // Would be nice to offer this file as a downloadat this point (so we don't have to
+                        // re-serve the static asset), but we're having two problems:
+                        //  1.) How do we detect when a preview was generated sucessfully vs. when a binary
+                        //      blob is being returned?
+                        //  2.) Once we have the response via AJAX, it's too late to prompt with a "Save As."
+                        // So it looks like we'll be best off just sending a redirect.
+                        return(res.json({redirect: url + '?downloadAttachment=1'}));
                     }
 
-                    res.send(preview);
+                    return res.json({html:preview});
                 });
             } else{
                 res.send(401);    
