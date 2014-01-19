@@ -91,11 +91,7 @@ module.exports = function (app) {
 
     app.get("*", function (req, res) {
         if (!res.locals.page) {
-            res.locals.page = new Page({
-                title: req.i18n.__("new-page"),
-                tags: "",
-                content: req.i18n.__("content")
-            });
+            return res.send(404);
         }
 
         return res.render("page", {
