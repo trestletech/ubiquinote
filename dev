@@ -1,1 +1,1 @@
-nodemon -w lib -w models -w routes .
+nodemon -w lib -w models -w routes -w media-plugins .

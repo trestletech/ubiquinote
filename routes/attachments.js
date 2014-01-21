@@ -40,10 +40,11 @@ module.exports = function (app) {
         var upload = new Object(null);
         try{
             _.each(files, function(file){
-                MediaHandler.render(file.type, file.name, 0, page._id, function(insert){
+                var content = fs.readFileSync(file.path);
+                MediaHandler.render(file.type, file.name, content, page._id, function(insert){
                     //FIXME: there's no guarantee that this will resolve before we respond.
                     upload[file.name] = {insert: insert};
-                });                
+                });
             });
         } catch (err){
             return res.send(415);

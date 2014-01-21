@@ -146,3 +146,47 @@ iframe {
 .gist{
     max-width: 100%;
 }
+
+.eml-subject {
+    font-weight: bold;
+    font-size: 1.2em;
+    padding-bottom: 1em;
+}
+
+td.field-title {
+    font-weight: bold;
+    color: #BBB;
+    font-weight: .9em;
+}
+
+body .modal-large {
+    width: 80%; 
+    margin-left:-40%; 
+}
+
+.eml-inline {
+    border: 1px solid #999; 
+    background-color: #dedede; 
+    font-size: .8em;    
+    display: inline-block;
+    padding: 0 5px 0 5px;
+}
+
+.eml-inline div.eml-content{
+    padding-left: 44px;
+}
+
+.eml-inline div.icon{
+    float: left;
+    width: 38px;
+    cursor: pointer !important;
+    cursor: hand !important;
+}
+
+.fa-3x {
+    font-size: 3em;
+}
+
+.eml-subject{
+    font-weight: bold;
+}
